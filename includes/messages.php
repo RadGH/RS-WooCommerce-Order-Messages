@@ -20,9 +20,12 @@ function __wom_should_show_message_here( $message, $location, $type, $order ) {
 	// Valid locations: above-details, below-details, bottom
 	if ( $message['location'] != $location ) return false;
 	
+	// Get order status, allow filtering
+	$order_status = apply_filters( 'rs_wom_override-order-status', $order->get_status(), $order );
+	
 	// Status match
 	// Example: completed, cancelled, on-hold
-	if ( !in_array( $order->get_status(), $message['statuses'] ) ) return false;
+	if ( !in_array( $order_status, $message['statuses'] ) ) return false;
 	
 	// Type match
 	// Valid types: email, website
