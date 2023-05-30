@@ -118,7 +118,7 @@ if( function_exists('acf_add_local_field_group') ):
 							'class' => '',
 							'id' => '',
 						),
-						'default_value' => '',
+						'default_value' => '0',
 						'placeholder' => 0,
 						'prepend' => '',
 						'append' => '',
