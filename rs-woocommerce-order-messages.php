@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: RS WooCommerce Order Messages
-Version:     1.0.1
-Plugin URI:  http://radleysustaire.com/
-Description: Adds configurable messages that can be displayed on the checkout page or emails in WooCommerce. Messages can be configured to appear in various locations, and can be set to only appear for certain order statuses. Messages can be configured at a global or product level.
+Version:     1.1.0
+Plugin URI:  https://radleysustaire.com/
+Description: This plugin allows you to add one or more messages to your products which are displayed on the order email and thank you page.
 Author:      Radley Sustaire
-Author URI:  mailto:radleygh@gmail.com
+Author URI:  https://radleysustaire.com/
 License:     GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 */
