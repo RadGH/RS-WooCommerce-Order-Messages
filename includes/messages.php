@@ -13,19 +13,19 @@ if ( !defined( 'ABSPATH' ) ) exit;
  *
  * @return bool
  */
-function __wom_should_show_message_here( $message, $location, $type, $order ) {
+function wom_should_display_at_location( $message, $location, $type, $order ) {
 	if ( !($order instanceof WC_Order) ) return false;
+	
+	// Message content must not be blank
+	if ( empty($message['content']) ) return false;
 	
 	// Location match
 	// Valid locations: above-details, below-details, bottom
 	if ( $message['location'] != $location ) return false;
 	
-	// Get order status, allow filtering
-	$order_status = apply_filters( 'rs_wom_override-order-status', $order->get_status(), $order );
-	
 	// Status match
 	// Example: completed, cancelled, on-hold
-	if ( !in_array( $order_status, $message['statuses'] ) ) return false;
+	if ( !in_array( $order->get_status(), $message['statuses'] ) ) return false;
 	
 	// Type match
 	// Valid types: email, website
@@ -43,8 +43,41 @@ function __wom_should_show_message_here( $message, $location, $type, $order ) {
  *
  * @return int
  */
-function __wom_sort_array_by_menu_order( $a, $b ) {
+function wom_sort_menu_order( $a, $b ) {
 	return (int) $a['menu_order'] - (int) $b['menu_order'];
+}
+
+/**
+ * Removes duplicate messages
+ *
+ * @param array[] $messages {
+ *     @type string   $location    "above-details"
+ *     @type string[] $statuses    array( 'pending', 'processing', ... )
+ *     @type string   $type        array( 'website', 'email' )
+ *     @type string   $menu_order  "0"
+ *     @type string   $content     "This message will be added to the email/thank you page"
+ * }
+ *
+ * @return array[]
+ */
+function wom_remove_duplicate_messages( $messages ) {
+	$unique_messages = array();
+	
+	// Loop through each message
+	foreach( $messages as $i => $m ) {
+		$content = $m['content'];
+		
+		// Check if this message has already been added
+		if ( in_array( $content, $unique_messages, true ) ) {
+			// Remove duplicate messages
+			unset( $messages[$i] );
+		}else{
+			// Keep new messages
+			$unique_messages[] = $content;
+		}
+	}
+	
+	return $messages;
 }
 
 
@@ -53,111 +86,113 @@ function __wom_sort_array_by_menu_order( $a, $b ) {
  * For website, See woocommerce/checkout/thankyou.php
  * For email, uses built-in hooks
  *
- * @param $order
- * @param $location
- * @param $type
+ * @param int|WC_Order $order
+ * @param string $location
+ * @param string $type
  *
  * @return void
  */
-function __wom_do_order_message( $order, $location, $type ) {
-	if ( is_numeric($order) ) $order = new WC_Order($order);
-	if ( !($order instanceof WC_Order) ) return;
+function wom_display_order_message( $order, $location, $type ) {
+	$order = wc_get_order($order);
+	if ( ! $order instanceof WC_Order ) return;
 	
-	$messages_to_display = array();
+	// Add messages displayed at this location to an array
+	$messages = array();
 	
 	// Get global messages.
 	$global_messages = get_field('wom_order_messages', 'options');
-	if ( $global_messages ) foreach( $global_messages as $i => $m ) {
+	
+	if ( $global_messages ) foreach( $global_messages as $msg ) {
+		
 		// Check if the message should be shown in this spot.
-		if ( !empty($m['content']) && __wom_should_show_message_here( $m, $location, $type, $order ) ) {
-			$messages_to_display[ 'global-' . $i ] = $m;
+		if ( wom_should_display_at_location( $msg, $location, $type, $order ) ) {
+			
+			$messages[] = $msg;
+			
 		}
+		
 	}
 	
-	// Get messages for each product.
-	foreach( $order->get_items() as $i => $order_item ) {
-		if ( !($order_item instanceof WC_Order_Item) ) continue;
+	// Get messages for each product in the order
+	if ( $order->get_items() ) foreach( $order->get_items() as $order_item ) {
+		if ( ! $order_item instanceof WC_Order_Item_Product ) continue;
 		
-		// Get all messages for this product
-		$messages = get_field( 'wom_order_messages', $order_item->get_product_id() );
+		// Get the product ID
+		$product_id = $order_item->get_product_id();
+		
+		// Get messages for this product
+		$product_messages = get_field( 'wom_order_messages', $product_id );
 		
 		// Loop through each custom message
-		if ( $messages ) foreach( $messages as $m ) {
-			// Check if the message should be shown in this spot.
-			if ( !empty($m['content']) && __wom_should_show_message_here( $m, $location, $type, $order ) ) {
-				// Yes!
-				// This message should be displayed. Add to an array for now, we'll sort that later.
-				// Use the array key to uniquely identify the message and prevent duplicate messages if the user orders two of the same product (eg, shirt size small and medium).
-				$messages_to_display[ 'product-' . $order_item->get_product_id() . '-' . $location .'-' . $type .'-' . $i ] = $m;
+		if ( $product_messages ) foreach( $product_messages as $msg ) {
+			
+			// Check if the message should be shown here.
+			if ( wom_should_display_at_location( $msg, $location, $type, $order ) ) {
+				
+				$messages[] = $msg;
+				
 			}
+			
 		}
 	}
 	
-	// No messages to display? Abort
-	if ( !$messages_to_display ) return;
+	// For handling more than 1 message
+	if ( count( $messages ) > 1 ) {
+		
+		// Remove messages with duplicate content
+		$messages = wom_remove_duplicate_messages( $messages );
+		
+		// Sort remaining messages by their menu order
+		usort( $messages, 'wom_sort_menu_order' );
 	
-	// Sort messages by priority
-	usort( $messages_to_display, '__wom_sort_array_by_menu_order' );
+	}
 	
-	// Put messages in this location into a container div for styling
+	// Allow filtering the messages in a plugin or functions.php
+	$messages = apply_filters( 'wom/messages', $messages, $order, $location, $type );
+	
+	// Abort if no messages should be added to this location
+	if ( ! $messages ) {
+		return;
+	}
+	
+	// Add a container for styling
 	echo sprintf( '<div class="wom-custom-order-messages location-%s type-%s">', esc_attr( $location ), esc_attr( $type ) );
 	
-	// Do the messages
-	foreach( $messages_to_display as $i => $m ) {
-		// Allow filtering the raw message
-		$content = apply_filters( 'wom-custom-order-message', $m['content'], $order, $location, $type );
+	// Display each message in its own div
+	foreach( $messages as $i => $msg ) {
 		
-		// Expand shortcodes
-		$content = do_shortcode($content);
+		echo '<div class="wom-message-item location-'. esc_attr( $location ) .' type-'. esc_attr( $type ) .'">';
 		
-		if ( $content ) {
-			// Build a div for this message item, with useful classes and a unique ID
-			echo sprintf(
-				'<div id="order-%d-%d-%s-%s" class="wom-message-item location-%s type-%s">',
-				
-				// id -- example: order-400-25-bottom-website
-				esc_attr( $order->get_id() ),
-				esc_attr( $order_item->get_product_id() ),
-				esc_attr( $location ),
-				esc_attr( $type ),
-				
-				// class
-				esc_attr( $location ), // above-details
-				esc_attr( $type ) // website
-			);
-			
-			// Put the content
-			echo $content;
-			
-			// End the message item
-			echo '</div>' . "\n";
-		}
+		echo do_shortcode($msg['content']);
+		
+		echo '</div>';
+		
 	}
 	
-	// End container
+	// Close the container
 	echo '</div>';
 }
 
 // Website aliases
 function wom_insert_order_messages_above_details( $order ) {
-	__wom_do_order_message( $order, 'above-details', 'website' );
+	wom_display_order_message( $order, 'above-details', 'website' );
 }
 function wom_insert_order_messages_below_details( $order ) {
-	__wom_do_order_message( $order, 'below-details', 'website' );
+	wom_display_order_message( $order, 'below-details', 'website' );
 }
 function wom_insert_order_messages_bottom( $order ) {
-	__wom_do_order_message( $order, 'bottom', 'website' );
+	wom_display_order_message( $order, 'bottom', 'website' );
 }
 
 // Email aliases
 function wom_insert_order_messages_above_details_email( $order ) {
-	__wom_do_order_message( $order, 'above-details', 'email' );
+	wom_display_order_message( $order, 'above-details', 'email' );
 }
 function wom_insert_order_messages_below_details_email( $order ) {
-	__wom_do_order_message( $order, 'below-details', 'email' );
+	wom_display_order_message( $order, 'below-details', 'email' );
 }
 function wom_insert_order_messages_bottom_email( $order ) {
-	__wom_do_order_message( $order, 'bottom', 'email' );
+	wom_display_order_message( $order, 'bottom', 'email' );
 }
 
 // Website hooks
