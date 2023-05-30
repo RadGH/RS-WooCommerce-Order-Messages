@@ -164,9 +164,9 @@ function wom_display_order_message( $order, $location, $type ) {
 	echo sprintf( '<div class="wom-custom-order-messages location-%s type-%s">', esc_attr( $location ), esc_attr( $type ) );
 	
 	// Display each message in its own div
-	foreach( $messages as $i => $msg ) {
+	foreach( $messages as $msg ) {
 		
-		echo '<div class="wom-message-item location-'. esc_attr( $location ) .' type-'. esc_attr( $type ) .'">';
+		echo '<div class="wom-message-item">';
 		
 		echo do_shortcode($msg['content']);
 		
