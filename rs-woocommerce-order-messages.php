@@ -12,9 +12,9 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 if ( !defined( 'ABSPATH' ) ) exit;
 
-define( 'RS_WOM_URL', untrailingslashit(plugin_dir_url( __FILE__ )) );
-define( 'RS_WOM_PATH', dirname(__FILE__) );
-define( 'RS_WOM_VERSION', '1.0.1' );
+define( 'WOM_URL', untrailingslashit(plugin_dir_url( __FILE__ )) );
+define( 'WOM_PATH', dirname(__FILE__) );
+define( 'WOM_VERSION', '1.1' );
 
 add_action( 'plugins_loaded', 'rs_wom_init_plugin' );
 
@@ -40,8 +40,8 @@ function rs_wom_init_plugin() {
 		));
 	}
 	
-	include_once( RS_WOM_PATH . '/fields/product-order-messages.php' );
-	include_once( RS_WOM_PATH . '/includes/messages.php' );
+	include_once( WOM_PATH . '/fields/product-order-messages.php' );
+	include_once( WOM_PATH . '/includes/messages.php' );
 }
 
 // Display a warning when WooCommerce is not active
