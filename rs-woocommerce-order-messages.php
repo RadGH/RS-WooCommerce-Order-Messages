@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: RS WooCommerce Order Messages
-Version:     1.0.0
+Version:     1.0.1
 Plugin URI:  http://radleysustaire.com/
 Description: Adds configurable messages that can be displayed on the checkout page or emails in WooCommerce. Messages can be configured to appear in various locations, and can be set to only appear for certain order statuses. Messages can be configured at a global or product level.
 Author:      Radley Sustaire
@@ -14,7 +14,7 @@ if ( !defined( 'ABSPATH' ) ) exit;
 
 define( 'AA_WOM_URL', untrailingslashit(plugin_dir_url( __FILE__ )) );
 define( 'AA_WOM_PATH', dirname(__FILE__) );
-define( 'AA_WOM_VERSION', '1.0.0' );
+define( 'AA_WOM_VERSION', '1.0.1' );
 
 add_action( 'plugins_loaded', 'aa_wom_init_plugin' );
 
