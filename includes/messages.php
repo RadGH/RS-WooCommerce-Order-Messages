@@ -139,11 +139,11 @@ function wom_display_order_message( $order, $location, $type ) {
 	// For handling more than 1 message
 	if ( count( $messages ) > 1 ) {
 		
-		// Remove messages with duplicate content
-		$messages = wom_remove_duplicate_messages( $messages );
-		
 		// Sort remaining messages by their menu order
 		usort( $messages, 'wom_sort_menu_order' );
+		
+		// Remove messages with duplicate content
+		$messages = wom_remove_duplicate_messages( $messages );
 	
 	}
 	
