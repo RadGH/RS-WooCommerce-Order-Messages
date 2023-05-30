@@ -65,7 +65,11 @@ function wom_remove_duplicate_messages( $messages ) {
 	
 	// Loop through each message
 	foreach( $messages as $i => $m ) {
+		
+		// Clean the message before comparison
 		$content = $m['content'];
+		$content = wp_strip_all_tags( $content );
+		$content = trim( $content );
 		
 		// Check if this message has already been added
 		if ( in_array( $content, $unique_messages, true ) ) {
@@ -75,6 +79,7 @@ function wom_remove_duplicate_messages( $messages ) {
 			// Keep new messages
 			$unique_messages[] = $content;
 		}
+		
 	}
 	
 	return $messages;
