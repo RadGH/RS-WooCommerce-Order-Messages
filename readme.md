@@ -42,12 +42,12 @@ Yes! Since version 1.1.0, messages with duplicate content are only shown once pe
 
 ## Changelog ##
 
-### 1.1.1
+#### 1.1.1
 * Removed unnecessary classes from message items (use parent container instead)
 * HTML and trailing whitespace is now ignored when checking for duplicate messages
 * Now sorts items before removing duplicates, which keeps high priority messages on top
 
-### 1.1.0
+#### 1.1.0
 * Improved code style, naming conventions, and comments
 * Removed inconsistent filters
 * Replaced "AA" references with "RS"
