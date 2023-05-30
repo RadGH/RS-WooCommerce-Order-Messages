@@ -38,13 +38,13 @@ function __wom_should_show_message_here( $message, $location, $type, $order ) {
  * Designed for use with usort().
  * Sort an array (of messages) by their menu_order key.
  *
- * @param $a
- * @param $b
+ * @param string|int $a
+ * @param string|int $b
  *
- * @return mixed
+ * @return int
  */
 function __wom_sort_array_by_menu_order( $a, $b ) {
-	return $a['menu_order'] - $b['menu_order'];
+	return (int) $a['menu_order'] - (int) $b['menu_order'];
 }
 
 
