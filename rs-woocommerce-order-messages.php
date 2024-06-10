@@ -1,20 +1,21 @@
 <?php
 /*
 Plugin Name: RS WooCommerce Order Messages
-Version:     1.1.1
+Version:     1.2.0
 Plugin URI:  https://radleysustaire.com/
 Description: This plugin allows you to add one or more messages to your products which are displayed on the order email and thank you page.
 Author:      Radley Sustaire
 Author URI:  https://radleysustaire.com/
 License:     GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
+GitHub Plugin URI: https://github.com/RadGH/RS-WooCommerce-Order-Messages
 */
 
 if ( !defined( 'ABSPATH' ) ) exit;
 
 define( 'WOM_URL', untrailingslashit(plugin_dir_url( __FILE__ )) );
 define( 'WOM_PATH', dirname(__FILE__) );
-define( 'WOM_VERSION', '1.1.1' );
+define( 'WOM_VERSION', '1.2.0' );
 
 add_action( 'plugins_loaded', 'rs_wom_init_plugin' );
 
