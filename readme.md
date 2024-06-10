@@ -20,7 +20,7 @@ Supports multiple products, and each product can have multiple messages. Message
 
 1. Upload the plugin files to `/wp-content/plugins/rs-woocommerce-order-messages/`, or install the plugin through the WordPress plugins screen.
 2. Activate the plugin through the 'Plugins' screen in WordPress
-3. Find global settings in WooCommerce > Order Messages or find per-product settings when editing a product under Product Order Messages
+3. Find global settings in WooCommerce > Order Messages or find per-product settings when editing a product under WooCommerce Order Messages
 4. Add one or more messages.
 5. View your message by viewing an order results page, or sending a customer email.
 

@@ -4,7 +4,7 @@ if( function_exists('acf_add_local_field_group') ):
 	
 	acf_add_local_field_group(array(
 		'key' => 'group_5bd6d0b84c682',
-		'title' => 'Product Order Messages',
+		'title' => 'WooCommerce Order Messages',
 		'fields' => array(
 			array(
 				'key' => 'field_5bd6d0b853d28',
