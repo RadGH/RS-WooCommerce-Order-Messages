@@ -42,6 +42,9 @@ Yes! Since version 1.1.0, messages with duplicate content are only shown once pe
 
 ## Changelog ##
 
+#### 1.2.0
+* Added support for Git Updater, allowing this plugin to automatically receive updates
+
 #### 1.1.1
 * Removed unnecessary classes from message items (use parent container instead)
 * HTML and trailing whitespace is now ignored when checking for duplicate messages
