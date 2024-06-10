@@ -42,6 +42,9 @@ Yes! Since version 1.1.0, messages with duplicate content are only shown once pe
 
 ## Changelog ##
 
+#### 1.2.1
+* Updated language to "WooCommerce Order Messages" instead of "Product Order Messages", for consistency
+
 #### 1.2.0
 * Added support for Git Updater, allowing this plugin to automatically receive updates
 
